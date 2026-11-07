@@ -1,0 +1,13 @@
+<svg viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(10, 10)">
+    <rect width="80" height="80" rx="16" fill="#0F172A" />
+    <path d="M17 14H40C49 14 56 20 56 28C56 35 51 40 44 41C52 43 59 49 59 57C59 67 51 73 40 73H17V14Z" fill="#0F172A" />
+    <path d="M25 19H40C47 19 51 23 51 28C51 34 47 38 40 38H25V19Z" fill="#F97316" />
+    <path d="M25 43H41C48 43 53 48 53 54C53 60 48 65 41 65H25V43Z" fill="#991B1B" />
+    <path d="M8 40H62M62 40L49 30M62 40L49 50" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <text x="105" y="48" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="28" fill="#0F172A">RaamBow</text>
+  <text x="238" y="48" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="28" fill="#64748B">TechSolutions</text>
+  <text x="106" y="70" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" letter-spacing="2" fill="#B91C1C">CLIENT MANAGEMENT</text>
+</svg>
+

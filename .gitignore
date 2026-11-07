@@ -1,0 +1,60 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js build output
+/.next/
+/out/
+
+# Production builds
+/build
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local environment variables and secrets (NEVER COMMIT)
+.env
+.env*.local
+.env.production
+.env.staging
+.env.supabase
+
+# Local SQLite databases & journals
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# TypeScript cache
+*.tsbuildinfo
+next-env.d.ts
+
+# Backups, dumps, snapshots and logs (NEVER COMMIT)
+/backups/
+backups/
+*.log
+*.tmp
+*.bak
+*.pre-*-backup
+*.pre-safety-backup
+*.pre-inspection-backup
+
+# Temporary scratch directories
+/scratch/
+scratch/
+
+# Prisma temporary generated clients
+prisma/.generated-*
+prisma/.temp-*
+

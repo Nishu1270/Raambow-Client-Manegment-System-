@@ -1,0 +1,138 @@
+// Prisma schema for Ramboow Client Management
+// Development configuration for Local SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  phone        String?
+  passwordHash String
+  role         String        @default("TEAM_MEMBER") // ADMIN or TEAM_MEMBER
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  assignedClients Client[]    @relation("AssignedClients")
+  callHistories   CallHistory[]
+  followUps       FollowUp[]
+  auditLogs       AuditLog[]
+  importHistories ImportHistory[]
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  clients     Client[]
+}
+
+model Client {
+  id             String        @id @default(uuid())
+  name           String
+  phone          String        @unique
+  email          String?
+  companyName    String?
+  location       String?
+  serviceId      String?
+  service        Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  assignedToId   String?
+  assignedTo     User?         @relation("AssignedClients", fields: [assignedToId], references: [id], onDelete: SetNull)
+  status         String        @default("NEW") // NEW, INTERESTED, FOLLOW_UP, FUTURE, THINKING, NOT_INTERESTED, NO_RESPONSE, CONVERTED, LOST
+  notes          String?
+  expectedStart  String?       // For FUTURE clients: e.g. "January 2027", "2027-01-15"
+  futureReason   String?       // For FUTURE clients: Reason for future interest / delayed start
+  lastContactAt  DateTime?
+  nextFollowUpAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  callHistories  CallHistory[]
+  followUps      FollowUp[]
+
+  @@index([status])
+  @@index([phone])
+  @@index([assignedToId])
+  @@index([nextFollowUpAt])
+}
+
+model CallHistory {
+  id             String    @id @default(uuid())
+  clientId       String
+  client         Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  callResult     String    // CONNECTED, NO_RESPONSE, BUSY, CALL_LATER, WRONG_NUMBER, MEETING_SCHEDULED, OTHER
+  notes          String
+  statusAtTime   String    // Legacy snapshot of client status at the time of call
+  previousStatus String?   // Explicit previous status before this update
+  newStatus      String?   // Explicit new status set in this update
+  calledAt       DateTime  @default(now())
+  nextFollowUpAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([calledAt])
+}
+
+model FollowUp {
+  id          String    @id @default(uuid())
+  clientId    String
+  client      Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scheduledAt DateTime
+  notes       String?
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([scheduledAt])
+  @@index([completed])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model ImportHistory {
+  id           String   @id @default(uuid())
+  fileName     String
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  totalRows    Int
+  importedRows Int
+  skippedRows  Int
+  failedRows   Int
+  status       String   @default("COMPLETED") // COMPLETED, PARTIAL, FAILED
+  errorLog     String?  // JSON stringified row errors
+  createdAt    DateTime @default(now())
+
+  @@index([uploadedById])
+  @@index([createdAt])
+}
+

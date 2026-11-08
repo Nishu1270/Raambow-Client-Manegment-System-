@@ -16,6 +16,7 @@ import {
   CalendarDays,
   ShieldCheck,
   FileSpreadsheet,
+  Trophy,
 } from "lucide-react";
 import { RamboowLogo } from "@/components/ui/RamboowLogo";
 import { SessionUser } from "@/lib/auth";
@@ -45,6 +46,9 @@ export function Sidebar({ user, onCloseMobile }: SidebarProps) {
     { label: "Add Client", href: "/clients/new", icon: UserPlus },
     { label: "Follow-ups", href: "/follow-ups", icon: CalendarClock },
     { label: "Future Clients", href: "/future", icon: CalendarDays },
+    ...(user?.role === "ADMIN"
+      ? [{ label: "Converted Clients", href: "/converted", icon: Trophy }]
+      : []),
     { label: "Call History", href: "/call-history", icon: PhoneCall },
     ...(user?.role === "ADMIN"
       ? [{ label: "Team", href: "/team", icon: UserCog }]
@@ -59,9 +63,9 @@ export function Sidebar({ user, onCloseMobile }: SidebarProps) {
       {/* Top Branding Section — rendered on desktop; on mobile the top header bar already displays the single top logo */}
       <div>
         {!onCloseMobile ? (
-          <div className="px-6 py-6 border-b border-slate-100 flex items-center justify-between bg-white">
+          <div className="px-5 py-5 border-b border-slate-100 flex items-center justify-start bg-white overflow-hidden">
             <Link href="/dashboard" className="block w-full">
-              <RamboowLogo size="lg" showSubtitle={false} className="w-full" />
+              <RamboowLogo size="md" showSubtitle={false} className="max-w-full" />
             </Link>
           </div>
         ) : (

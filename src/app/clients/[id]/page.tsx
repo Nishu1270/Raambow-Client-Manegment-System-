@@ -28,6 +28,7 @@ import {
   Sparkles,
   ArrowRight,
   ShieldAlert,
+  IndianRupee,
 } from "lucide-react";
 
 export default function ClientProfilePage() {
@@ -77,6 +78,13 @@ export default function ClientProfilePage() {
         expectedStart: data.client.expectedStart || "",
         futureReason: data.client.futureReason || "",
         notes: data.client.notes || "",
+        quotationAmount: data.client.quotationAmount ? String(data.client.quotationAmount) : "",
+        quotationDetails: data.client.quotationDetails || "",
+        advanceReceived: data.client.advanceReceived ? String(data.client.advanceReceived) : "",
+        balancePayment: data.client.balancePayment ? String(data.client.balancePayment) : "",
+        paymentStatus: data.client.paymentStatus || "PENDING",
+        projectStarted: data.client.projectStarted ? data.client.projectStarted.split("T")[0] : "",
+        projectDeadline: data.client.projectDeadline ? data.client.projectDeadline.split("T")[0] : "",
       });
     } catch (err: any) {
       setError(err.message || "An error occurred.");
@@ -430,16 +438,149 @@ export default function ClientProfilePage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Assigned Consultant</label>
                 <select
-                  value={editForm.assignedToId}
+                  value={editForm.assignedToId || ""}
                   onChange={(e) => setEditForm({ ...editForm, assignedToId: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border rounded-xl"
+                  className="w-full px-3 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
                 >
+                  <option value="">-- Unassigned --</option>
                   {teamMembers.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {m.name}
+                      {m.name} ({m.role === "ADMIN" ? "Admin" : "Consultant"})
                     </option>
                   ))}
+                  {client?.assignedTo && !teamMembers.some((m) => m.id === client.assignedTo.id) && (
+                    <option key={client.assignedTo.id} value={client.assignedTo.id}>
+                      {client.assignedTo.name} (Current)
+                    </option>
+                  )}
                 </select>
+              </div>
+            )}
+
+            {/* Quotation & Project Financials in Edit Form (Admin Only) */}
+            {isAdmin && (
+              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs uppercase tracking-wider">
+                    <IndianRupee className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Project Quotation &amp; Financials (Admin Only)</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                    Confidential
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Agreed Quotation / Price (₹)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 50000"
+                      value={editForm.quotationAmount}
+                      onChange={(e) => {
+                        const q = e.target.value;
+                        const adv = editForm.advanceReceived;
+                        const bal = Math.max(0, (parseFloat(q) || 0) - (parseFloat(adv) || 0));
+                        setEditForm({
+                          ...editForm,
+                          quotationAmount: q,
+                          balancePayment: String(bal),
+                        });
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Advance Received (₹)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 20000"
+                      value={editForm.advanceReceived}
+                      onChange={(e) => {
+                        const adv = e.target.value;
+                        const q = editForm.quotationAmount;
+                        const bal = Math.max(0, (parseFloat(q) || 0) - (parseFloat(adv) || 0));
+                        setEditForm({
+                          ...editForm,
+                          advanceReceived: adv,
+                          balancePayment: String(bal),
+                        });
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white font-semibold text-emerald-700"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Balance Payment (₹)
+                    </label>
+                    <input
+                      type="text"
+                      readOnly
+                      value={editForm.balancePayment ? `₹${editForm.balancePayment}` : "₹0"}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-amber-100/50 font-bold text-amber-900 cursor-not-allowed"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Payment Status
+                    </label>
+                    <select
+                      value={editForm.paymentStatus}
+                      onChange={(e) => setEditForm({ ...editForm, paymentStatus: e.target.value })}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white"
+                    >
+                      <option value="PENDING">Pending (Advance awaited)</option>
+                      <option value="PARTIAL">Partial (Advance received)</option>
+                      <option value="COMPLETED">Completed (Fully paid)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Project Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={editForm.projectStarted}
+                      onChange={(e) => setEditForm({ ...editForm, projectStarted: e.target.value })}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Project Deadline
+                    </label>
+                    <input
+                      type="date"
+                      value={editForm.projectDeadline}
+                      onChange={(e) => setEditForm({ ...editForm, projectDeadline: e.target.value })}
+                      className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    Quotation Scope / Payment Terms
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Enter agreed quote terms, deliverables, milestones..."
+                    value={editForm.quotationDetails}
+                    onChange={(e) => setEditForm({ ...editForm, quotationDetails: e.target.value })}
+                    className="w-full px-3 py-2 text-xs border border-amber-300 rounded-xl bg-white"
+                  />
+                </div>
               </div>
             )}
 
@@ -600,6 +741,79 @@ export default function ClientProfilePage() {
                       <p className="text-xs text-purple-900 mt-0.5 italic">
                         &ldquo;{client.futureReason}&rdquo;
                       </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Quotation & Project Financials Display (Admin Only) */}
+              {isAdmin && (
+                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <IndianRupee className="w-3.5 h-3.5 text-amber-700" />
+                      Project Quotation
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full uppercase">
+                      Admin Only
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-amber-200/60">
+                      <span className="text-[10px] font-semibold text-slate-500 block">Agreed Price</span>
+                      <strong className="text-sm font-black text-slate-900 block mt-0.5">
+                        {client.quotationAmount ? `₹${Number(client.quotationAmount).toLocaleString("en-IN")}` : "Not Set"}
+                      </strong>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-amber-200/60">
+                      <span className="text-[10px] font-semibold text-slate-500 block">Advance Paid</span>
+                      <strong className="text-sm font-black text-emerald-700 block mt-0.5">
+                        {client.advanceReceived ? `₹${Number(client.advanceReceived).toLocaleString("en-IN")}` : "₹0"}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white/80 border border-amber-200/60 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-[10px] font-semibold text-slate-500 block">Balance Pending</span>
+                      <strong className="text-sm font-black text-amber-900 block">
+                        ₹{(Number(client.balancePayment) || Math.max(0, (Number(client.quotationAmount) || 0) - (Number(client.advanceReceived) || 0))).toLocaleString("en-IN")}
+                      </strong>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${
+                      client.paymentStatus === "COMPLETED"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : client.paymentStatus === "PARTIAL"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}>
+                      {client.paymentStatus || "PENDING"}
+                    </span>
+                  </div>
+
+                  {(client.projectStarted || client.projectDeadline) && (
+                    <div className="pt-2 border-t border-amber-200/60 text-[11px] space-y-1">
+                      {client.projectStarted && (
+                        <div className="flex items-center justify-between text-slate-600">
+                          <span>Kickoff:</span>
+                          <span className="font-semibold text-slate-900">{formatDate(client.projectStarted)}</span>
+                        </div>
+                      )}
+                      {client.projectDeadline && (
+                        <div className="flex items-center justify-between text-slate-600">
+                          <span>Deadline:</span>
+                          <span className="font-semibold text-slate-900">{formatDate(client.projectDeadline)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {client.quotationDetails && (
+                    <div className="pt-2 border-t border-amber-200/60 text-xs text-amber-950">
+                      <span className="text-[10px] font-bold text-amber-800 block uppercase">Scope / Notes:</span>
+                      <p className="mt-0.5 italic">&ldquo;{client.quotationDetails}&rdquo;</p>
                     </div>
                   )}
                 </div>

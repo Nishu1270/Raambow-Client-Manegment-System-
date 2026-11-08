@@ -38,9 +38,9 @@ export function Header({
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="lg:hidden">
-          <Link href="/dashboard">
-            <RamboowLogo size="md" showSubtitle={false} />
+        <div className="lg:hidden shrink-0">
+          <Link href="/dashboard" className="inline-flex items-center">
+            <RamboowLogo size="sm" showSubtitle={false} />
           </Link>
         </div>
 

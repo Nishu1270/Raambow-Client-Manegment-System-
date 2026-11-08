@@ -113,7 +113,30 @@ export async function GET(request: Request) {
       },
     });
 
-    // Upcoming urgent followups (up to 5)
+    // Today's urgent followups (strictly due today: gte startOfToday, lte endOfToday)
+    const todayFollowUps = await prisma.client.findMany({
+      where: {
+        ...whereClause,
+        nextFollowUpAt: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
+      },
+      take: 10,
+      orderBy: { nextFollowUpAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        companyName: true,
+        phone: true,
+        status: true,
+        nextFollowUpAt: true,
+        service: { select: { name: true } },
+        assignedTo: { select: { id: true, name: true } },
+      },
+    });
+
+    // Upcoming urgent followups (future followups)
     const upcomingFollowUps = await prisma.client.findMany({
       where: {
         ...whereClause,
@@ -121,7 +144,7 @@ export async function GET(request: Request) {
           gte: startOfToday,
         },
       },
-      take: 5,
+      take: 10,
       orderBy: { nextFollowUpAt: "asc" },
       select: {
         id: true,
@@ -170,6 +193,7 @@ export async function GET(request: Request) {
       overdueFollowUpsCount,
       pendingApprovalsCount,
       recentCalls,
+      todayFollowUps,
       upcomingFollowUps,
       overdueFollowUps,
     });

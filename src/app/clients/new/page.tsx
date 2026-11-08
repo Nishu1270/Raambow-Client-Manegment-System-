@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Sparkles,
   HelpCircle,
+  IndianRupee,
 } from "lucide-react";
 
 export default function AddClientPage() {
@@ -38,6 +39,12 @@ export default function AddClientPage() {
     futureReason: "",
     nextFollowUpDate: "",
     nextFollowUpTime: "11:00",
+    quotationAmount: "",
+    quotationDetails: "",
+    advanceReceived: "",
+    paymentStatus: "PENDING",
+    projectStarted: "",
+    projectDeadline: "",
   });
 
   const [services, setServices] = useState<any[]>([]);
@@ -457,6 +464,95 @@ export default function AddClientPage() {
                       className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
                     />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quotation & Project Price (Admin Only) */}
+            {userRole === "ADMIN" && (
+              <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/90 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-950 uppercase tracking-wider">
+                    <IndianRupee className="w-4 h-4 text-amber-700" />
+                    <span>Project Quotation &amp; Pricing (Admin Only)</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                    Confidential
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Agreed Quotation / Fixed Price (₹)
+                    </label>
+                    <input
+                      type="number"
+                      name="quotationAmount"
+                      placeholder="e.g. 50000"
+                      value={formData.quotationAmount}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-amber-300 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Advance Received (₹)
+                    </label>
+                    <input
+                      type="number"
+                      name="advanceReceived"
+                      placeholder="e.g. 20000"
+                      value={formData.advanceReceived}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-amber-300 bg-white font-semibold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                {formData.status === "CONVERTED" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-amber-200/60">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Project Kickoff Date
+                      </label>
+                      <input
+                        type="date"
+                        name="projectStarted"
+                        value={formData.projectStarted}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Project Delivery Deadline
+                      </label>
+                      <input
+                        type="date"
+                        name="projectDeadline"
+                        value={formData.projectDeadline}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    Quotation Scope / Deliverables
+                  </label>
+                  <textarea
+                    rows={2}
+                    name="quotationDetails"
+                    placeholder="Enter key deliverables, payment milestones, tech stack..."
+                    value={formData.quotationDetails}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
                 </div>
               </div>
             )}

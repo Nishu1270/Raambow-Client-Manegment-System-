@@ -363,12 +363,12 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200">
-            <div className="flex items-center gap-4">
-              <RamboowLogo size="xl" />
+            <div className="flex items-center gap-4 shrink-0">
+              <RamboowLogo size="lg" showSubtitle={true} />
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-200/80 bg-red-50 text-xs font-semibold text-ramboow-red-700">
-              <ShieldCheck className="w-4 h-4 text-ramboow-red-600" />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-200/80 bg-red-50 text-xs font-semibold text-ramboow-red-700 shrink-0 whitespace-nowrap">
+              <ShieldCheck className="w-4 h-4 text-ramboow-red-600 shrink-0" />
               <span>Govt. Registered MSME Enterprise IN</span>
             </div>
           </div>

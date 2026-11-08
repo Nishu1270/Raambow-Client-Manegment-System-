@@ -79,13 +79,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen relative flex flex-col justify-between bg-white overflow-hidden font-sans">
       {/* Top Navbar */}
-      <header className="relative z-10 p-6 sm:px-12 flex items-center justify-between border-b border-slate-100 bg-white">
-        <Link href="/login" className="inline-block">
-          <RamboowLogo size="xl" />
+      <header className="relative z-10 px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between gap-4 border-b border-slate-100 bg-white">
+        <Link href="/login" className="inline-flex items-center shrink-0">
+          <RamboowLogo size="xl" showSubtitle={true} />
         </Link>
 
-        <div className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-red-200 bg-red-50/70 text-xs font-medium text-ramboow-red-700 shadow-2xs">
-          <ShieldCheck className="w-3.5 h-3.5 text-ramboow-red-600" />
+        {/* MSME Badge */}
+        <div className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-red-200 bg-red-50/70 text-xs font-medium text-ramboow-red-700 shadow-2xs shrink-0 whitespace-nowrap">
+          <ShieldCheck className="w-3.5 h-3.5 text-ramboow-red-600 shrink-0" />
           <span>Govt. Registered MSME Enterprise</span>
           <span className="text-[10px] font-bold text-ramboow-red-800">IN</span>
         </div>

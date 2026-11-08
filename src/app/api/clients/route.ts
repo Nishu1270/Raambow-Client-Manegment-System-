@@ -61,7 +61,7 @@ export async function GET(request: Request) {
       orderBy = { name: "asc" };
     }
 
-    const [total, clients] = await Promise.all([
+    const [total, rawClients] = await Promise.all([
       prisma.client.count({ where }),
       prisma.client.findMany({
         where,
@@ -75,6 +75,22 @@ export async function GET(request: Request) {
         },
       }),
     ]);
+
+    // Financial Privacy RBAC: Non-admin employees must never see quotation or financial amounts
+    const clients = rawClients.map((c) => {
+      if (user.role !== "ADMIN") {
+        const {
+          quotationAmount,
+          quotationDetails,
+          advanceReceived,
+          balancePayment,
+          paymentStatus,
+          ...safeClient
+        } = c as any;
+        return safeClient;
+      }
+      return c;
+    });
 
     return NextResponse.json({
       clients,
@@ -116,6 +132,12 @@ export async function POST(request: Request) {
       futureReason,
       nextFollowUpDate,
       nextFollowUpTime,
+      quotationAmount,
+      quotationDetails,
+      advanceReceived,
+      paymentStatus = "PENDING",
+      projectStarted,
+      projectDeadline,
     } = body;
 
     // Validation
@@ -166,6 +188,23 @@ export async function POST(request: Request) {
       nextFollowUpAt = new Date(`${nextFollowUpDate}T${timeStr}:00`);
     }
 
+    // Quotation and converted fields (Admin-only)
+    let parsedQuotation: number | null = null;
+    let parsedAdvance: number | null = null;
+    let parsedBalance: number | null = null;
+
+    if (user.role === "ADMIN") {
+      if (quotationAmount !== undefined && quotationAmount !== "" && quotationAmount !== null) {
+        parsedQuotation = parseFloat(quotationAmount);
+      }
+      if (advanceReceived !== undefined && advanceReceived !== "" && advanceReceived !== null) {
+        parsedAdvance = parseFloat(advanceReceived);
+      }
+      if (parsedQuotation !== null) {
+        parsedBalance = Math.max(0, (parsedQuotation || 0) - (parsedAdvance || 0));
+      }
+    }
+
     const client = await prisma.client.create({
       data: {
         name: name.trim(),
@@ -179,6 +218,13 @@ export async function POST(request: Request) {
         notes: notes?.trim() || null,
         expectedStart: expectedStart?.trim() || null,
         futureReason: futureReason?.trim() || null,
+        quotationAmount: user.role === "ADMIN" ? parsedQuotation : null,
+        quotationDetails: user.role === "ADMIN" && quotationDetails ? String(quotationDetails).trim() : null,
+        advanceReceived: user.role === "ADMIN" ? parsedAdvance : null,
+        balancePayment: user.role === "ADMIN" ? parsedBalance : null,
+        paymentStatus: user.role === "ADMIN" ? paymentStatus : "PENDING",
+        projectStarted: user.role === "ADMIN" && projectStarted ? new Date(projectStarted) : null,
+        projectDeadline: user.role === "ADMIN" && projectDeadline ? new Date(projectDeadline) : null,
         nextFollowUpAt: nextFollowUpAt,
         lastContactAt: null,
       },

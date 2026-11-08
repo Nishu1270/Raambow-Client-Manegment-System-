@@ -53,6 +53,14 @@ model Client {
   notes          String?
   expectedStart  String?       // For FUTURE clients: e.g. "January 2027", "2027-01-15"
   futureReason   String?       // For FUTURE clients: Reason for future interest / delayed start
+  // Project Quotation & Converted Client Management (Admin Only)
+  quotationAmount Float?       // Agreed quotation / fixed project price
+  quotationDetails String?      // Scope / quotation notes
+  advanceReceived Float?       // Advance payment received
+  balancePayment Float?       // Balance payment remaining
+  paymentStatus  String?       @default("PENDING") // PENDING, PARTIAL, COMPLETED
+  projectStarted DateTime?     // Project start date
+  projectDeadline DateTime?    // Project deadline
   lastContactAt  DateTime?
   nextFollowUpAt DateTime?
   createdAt      DateTime      @default(now())

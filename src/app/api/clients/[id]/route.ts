@@ -48,6 +48,14 @@ export async function GET(
       );
     }
 
+    // Financial Privacy RBAC: Non-admin users must not see quotation or project financials
+    if (user.role !== "ADMIN") {
+      delete (client as any).quotationAmount;
+      delete (client as any).quotationDetails;
+      delete (client as any).advanceReceived;
+      delete (client as any).balancePayment;
+    }
+
     return NextResponse.json({ client });
   } catch (error) {
     console.error("Get client error:", error);
@@ -99,7 +107,72 @@ export async function PATCH(
 
     // Admin can reassign; Team member cannot reassign
     if (body.assignedToId !== undefined && user.role === "ADMIN") {
-      updateData.assignedToId = body.assignedToId || null;
+      const newAssignedId = body.assignedToId ? String(body.assignedToId).trim() : null;
+      if (newAssignedId !== client.assignedToId) {
+        updateData.assignedToId = newAssignedId;
+
+        let assigneeName = "Unassigned";
+        if (newAssignedId) {
+          const assignee = await prisma.user.findUnique({
+            where: { id: newAssignedId },
+            select: { name: true, email: true },
+          });
+          if (assignee) assigneeName = `${assignee.name} (${assignee.email})`;
+        }
+
+        await prisma.auditLog.create({
+          data: {
+            userId: user.id,
+            action: "CLIENT_REASSIGNED",
+            details: `Client "${client.name}" reassigned to ${assigneeName} by ${user.name}.`,
+          },
+        });
+
+        await prisma.callHistory.create({
+          data: {
+            clientId: client.id,
+            userId: user.id,
+            callResult: "OTHER",
+            notes: `Consultant reassignment: client assigned to ${assigneeName} by ${user.name}.`,
+            statusAtTime: client.status,
+            previousStatus: client.status,
+            newStatus: client.status,
+          },
+        });
+      }
+    }
+
+    // Quotation and converted project fields (Admin-only)
+    if (user.role === "ADMIN") {
+      let price = client.quotationAmount;
+      let advance = client.advanceReceived;
+
+      if (body.quotationAmount !== undefined) {
+        price = body.quotationAmount === "" || body.quotationAmount === null ? null : parseFloat(body.quotationAmount);
+        updateData.quotationAmount = price;
+      }
+      if (body.advanceReceived !== undefined) {
+        advance = body.advanceReceived === "" || body.advanceReceived === null ? null : parseFloat(body.advanceReceived);
+        updateData.advanceReceived = advance;
+      }
+      if (price !== null && advance !== null) {
+        updateData.balancePayment = Math.max(0, (price || 0) - (advance || 0));
+      } else if (body.balancePayment !== undefined) {
+        updateData.balancePayment =
+          body.balancePayment === "" || body.balancePayment === null ? null : parseFloat(body.balancePayment);
+      }
+      if (body.quotationDetails !== undefined) {
+        updateData.quotationDetails = body.quotationDetails ? String(body.quotationDetails).trim() : null;
+      }
+      if (body.paymentStatus !== undefined) {
+        updateData.paymentStatus = body.paymentStatus;
+      }
+      if (body.projectStarted !== undefined) {
+        updateData.projectStarted = body.projectStarted ? new Date(body.projectStarted) : null;
+      }
+      if (body.projectDeadline !== undefined) {
+        updateData.projectDeadline = body.projectDeadline ? new Date(body.projectDeadline) : null;
+      }
     }
 
     // Status change

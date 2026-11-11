@@ -14,6 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search")?.trim() || "";
     const status = searchParams.get("status")?.trim() || "";
+    const company = searchParams.get("company")?.trim() || "";
     const assignedToId = searchParams.get("assignedToId")?.trim() || "";
     const serviceId = searchParams.get("serviceId")?.trim() || "";
     const sortBy = searchParams.get("sortBy") || "newest";
@@ -32,6 +33,12 @@ export async function GET(request: Request) {
 
     if (status && status !== "ALL") {
       where.status = status;
+    }
+
+    if (company && company !== "ALL") {
+      if (company === "RAAMBOW" || company === "KATERNGERS") {
+        where.company = company;
+      }
     }
 
     if (serviceId && serviceId !== "ALL") {
@@ -122,6 +129,7 @@ export async function POST(request: Request) {
       name,
       phone,
       companyName,
+      company = "RAAMBOW",
       email,
       location,
       serviceId,
@@ -156,6 +164,15 @@ export async function POST(request: Request) {
     }
 
     const trimmedPhone = phone.trim();
+
+    // Server-side Company validation (Multi-Company Project Management)
+    const normalizedCompany = (company ? String(company).trim().toUpperCase() : "RAAMBOW");
+    if (normalizedCompany !== "RAAMBOW" && normalizedCompany !== "KATERNGERS") {
+      return NextResponse.json(
+        { error: "Invalid company selected. Project must belong to either RAAMBOW or KATERNGERS." },
+        { status: 400 }
+      );
+    }
 
     // Check duplicate phone
     const existing = await prisma.client.findUnique({
@@ -210,6 +227,7 @@ export async function POST(request: Request) {
         name: name.trim(),
         phone: trimmedPhone,
         companyName: companyName?.trim() || null,
+        company: normalizedCompany,
         email: email?.trim() || null,
         location: location?.trim() || null,
         serviceId: serviceId || null,

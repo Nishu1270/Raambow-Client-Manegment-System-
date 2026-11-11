@@ -46,6 +46,20 @@ export const SUPPORTED_IMPORT_FIELDS: FieldDefinition[] = [
     ],
   },
   {
+    key: "company",
+    label: "Company / Project Belongs To",
+    required: false,
+    aliases: [
+      "project company",
+      "company belongs to",
+      "project belongs to",
+      "raambow or katerngers",
+      "belongs to",
+      "entity",
+      "operating company",
+    ],
+  },
+  {
     key: "companyName",
     label: "Company Name",
     required: false,
@@ -498,6 +512,7 @@ export async function parseSpreadsheetBuffer(buffer: Buffer): Promise<{
 export interface ValidatedImportRow {
   rowNumber: number; // 1-based index (data row 1 is row 2 in Excel)
   name: string;
+  company?: string;
   phone: string;
   companyName?: string;
   email?: string;
@@ -686,9 +701,14 @@ export function validateImportRows(params: {
       }
     }
 
+    // Multi-Company Project Ownership
+    const rawCompany = String(getVal("company") || "").trim().toUpperCase();
+    const projectCompany = rawCompany.includes("KATERNGER") ? "KATERNGERS" : "RAAMBOW";
+
     validatedRows.push({
       rowNumber,
       name: nameVal,
+      company: projectCompany,
       phone: finalPhone,
       companyName: companyVal || undefined,
       email: emailVal || undefined,
@@ -762,6 +782,7 @@ export async function generateClientsExportWorkbook(params: {
   const clientsSheet = workbook.addWorksheet("Clients");
   clientsSheet.columns = [
     { header: "Client Name", key: "name", width: 22 },
+    { header: "Project Belongs To", key: "company", width: 22 },
     { header: "Phone Number", key: "phone", width: 18 },
     { header: "Company Name", key: "companyName", width: 24 },
     { header: "Email", key: "email", width: 26 },
@@ -782,6 +803,7 @@ export async function generateClientsExportWorkbook(params: {
   for (const c of clients) {
     clientsSheet.addRow({
       name: c.name || "",
+      company: c.company || "RAAMBOW",
       phone: c.phone || "",
       companyName: c.companyName || "",
       email: c.email || "",

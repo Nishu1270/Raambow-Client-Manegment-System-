@@ -78,6 +78,7 @@ export async function GET(request: Request) {
               name: true,
               phone: true,
               companyName: true,
+              company: true,
               status: true,
               service: { select: { name: true } },
             },

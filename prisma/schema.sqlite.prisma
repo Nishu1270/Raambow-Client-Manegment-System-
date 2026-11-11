@@ -44,6 +44,7 @@ model Client {
   phone          String        @unique
   email          String?
   companyName    String?
+  company        String        @default("RAAMBOW") // RAAMBOW or KATERNGERS
   location       String?
   serviceId      String?
   service        Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
@@ -71,6 +72,7 @@ model Client {
 
   @@index([status])
   @@index([phone])
+  @@index([company])
   @@index([assignedToId])
   @@index([nextFollowUpAt])
 }

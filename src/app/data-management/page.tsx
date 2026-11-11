@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { CLIENT_STATUSES } from "@/lib/constants";
 import {
   FileSpreadsheet,
@@ -807,7 +808,10 @@ function ImportClientsTab({ currentUser }: { currentUser: any }) {
                         #{row.rowNumber}
                       </td>
                       <td className="py-2.5 px-3 font-semibold text-slate-900">
-                        {row.name || <span className="text-rose-500 italic">Missing Name</span>}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span>{row.name || <span className="text-rose-500 italic">Missing Name</span>}</span>
+                          <CompanyBadge company={row.company || "RAAMBOW"} size="xs" />
+                        </div>
                       </td>
                       <td className="py-2.5 px-3 font-mono text-slate-700">
                         {row.phone || "—"}

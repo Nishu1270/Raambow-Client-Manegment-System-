@@ -105,7 +105,7 @@ export async function GET(request: Request) {
       orderBy: { calledAt: "desc" },
       include: {
         client: {
-          select: { id: true, name: true, companyName: true, phone: true, status: true },
+          select: { id: true, name: true, companyName: true, company: true, phone: true, status: true },
         },
         user: {
           select: { id: true, name: true },
@@ -128,6 +128,7 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         companyName: true,
+        company: true,
         phone: true,
         status: true,
         nextFollowUpAt: true,
@@ -150,6 +151,7 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         companyName: true,
+        company: true,
         phone: true,
         status: true,
         nextFollowUpAt: true,
@@ -172,6 +174,7 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         companyName: true,
+        company: true,
         phone: true,
         status: true,
         nextFollowUpAt: true,

@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { LogCallModal } from "@/components/ui/LogCallModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { formatDate } from "@/lib/utils";
 import { CLIENT_STATUSES } from "@/lib/constants";
 import {
@@ -40,6 +41,7 @@ function ClientsContent() {
   // Filters & State
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(initialStatus);
+  const [company, setCompany] = useState("ALL");
   const [assignedToId, setAssignedToId] = useState("ALL");
   const [serviceId, setServiceId] = useState("ALL");
   const [sortBy, setSortBy] = useState("newest");
@@ -101,6 +103,7 @@ function ClientsContent() {
 
       if (search.trim()) params.append("search", search.trim());
       if (status && status !== "ALL") params.append("status", status);
+      if (company && company !== "ALL") params.append("company", company);
       if (assignedToId && assignedToId !== "ALL") params.append("assignedToId", assignedToId);
       if (serviceId && serviceId !== "ALL") params.append("serviceId", serviceId);
 
@@ -122,7 +125,7 @@ function ClientsContent() {
 
   useEffect(() => {
     fetchClients();
-  }, [page, limit, status, assignedToId, serviceId, sortBy]);
+  }, [page, limit, status, company, assignedToId, serviceId, sortBy]);
 
   // Debounced search
   useEffect(() => {
@@ -150,6 +153,7 @@ function ClientsContent() {
   const clearFilters = () => {
     setSearch("");
     setStatus("ALL");
+    setCompany("ALL");
     setAssignedToId("ALL");
     setServiceId("ALL");
     setSortBy("newest");
@@ -234,7 +238,37 @@ function ClientsContent() {
         </div>
 
         {/* Multi-Filter Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Company Filter (Multi-Company Project Management) */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span>Company</span>
+              {company !== "ALL" && (
+                <span
+                  className="text-[10px] text-blue-600 font-semibold cursor-pointer hover:underline"
+                  onClick={() => {
+                    setCompany("ALL");
+                    setPage(1);
+                  }}
+                >
+                  Clear
+                </span>
+              )}
+            </label>
+            <select
+              value={company}
+              onChange={(e) => {
+                setCompany(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+            >
+              <option value="ALL">All Companies</option>
+              <option value="RAAMBOW">RAAMBOW</option>
+              <option value="KATERNGERS">KATERNGERS</option>
+            </select>
+          </div>
+
           {/* Status Select */}
           <div>
             <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
@@ -417,13 +451,16 @@ function ClientsContent() {
                     >
                       {/* 1. Client Name */}
                       <td className="py-3.5 px-4 font-semibold text-slate-900">
-                        <Link
-                          href={`/clients/${client.id}`}
-                          className="hover:text-ramboow-red-700 transition-colors flex items-center gap-1.5"
-                        >
-                          <span className="font-bold">{client.name}</span>
-                          <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-ramboow-red-500 transition-colors" />
-                        </Link>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link
+                            href={`/clients/${client.id}`}
+                            className="hover:text-ramboow-red-700 transition-colors flex items-center gap-1.5"
+                          >
+                            <span className="font-bold">{client.name}</span>
+                            <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-ramboow-red-500 transition-colors" />
+                          </Link>
+                          <CompanyBadge company={client.company} size="xs" />
+                        </div>
                         {client.location && (
                           <span className="block text-[11px] font-normal text-slate-400 truncate max-w-[160px]">
                             {client.location}
@@ -540,13 +577,16 @@ function ClientsContent() {
                   {/* Top row: Name, Phone, Status */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="text-base font-bold text-slate-900 hover:text-ramboow-red-700 flex items-center gap-1"
-                      >
-                        <span>{client.name}</span>
-                        <ExternalLink className="w-3 h-3 text-slate-400" />
-                      </Link>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="text-base font-bold text-slate-900 hover:text-ramboow-red-700 flex items-center gap-1"
+                        >
+                          <span>{client.name}</span>
+                          <ExternalLink className="w-3 h-3 text-slate-400" />
+                        </Link>
+                        <CompanyBadge company={client.company} size="xs" />
+                      </div>
                       <a
                         href={`tel:${client.phone}`}
                         className="text-xs font-semibold text-ramboow-red-700 flex items-center gap-1 mt-0.5"

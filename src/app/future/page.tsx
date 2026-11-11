@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { LogCallModal } from "@/components/ui/LogCallModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import {
   CalendarDays,
@@ -84,12 +85,15 @@ export default function FutureClientsPage() {
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div>
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="text-base font-bold text-slate-900 hover:text-purple-700 transition-colors block"
-                      >
-                        {client.name}
-                      </Link>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="text-base font-bold text-slate-900 hover:text-purple-700 transition-colors"
+                        >
+                          {client.name}
+                        </Link>
+                        <CompanyBadge company={client.company} size="xs" />
+                      </div>
                       {client.companyName && (
                         <span className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                           <Building2 className="w-3.5 h-3.5 text-slate-400" />

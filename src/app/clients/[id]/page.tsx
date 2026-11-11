@@ -8,8 +8,10 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CallResultBadge } from "@/components/ui/CallResultBadge";
 import { LogCallModal } from "@/components/ui/LogCallModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { CompanySelector } from "@/components/ui/CompanySelector";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
-import { CLIENT_STATUSES } from "@/lib/constants";
+import { CLIENT_STATUSES, CompanyType } from "@/lib/constants";
 import {
   ArrowLeft,
   Phone,
@@ -70,6 +72,7 @@ export default function ClientProfilePage() {
         name: data.client.name,
         phone: data.client.phone,
         companyName: data.client.companyName || "",
+        company: data.client.company || "RAAMBOW",
         email: data.client.email || "",
         location: data.client.location || "",
         serviceId: data.client.serviceId || "",
@@ -259,6 +262,7 @@ export default function ClientProfilePage() {
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     {client.name}
                   </h1>
+                  <CompanyBadge company={client.company} size="sm" />
                   <StatusBadge status={client.status} size="md" />
                 </div>
 
@@ -433,6 +437,17 @@ export default function ClientProfilePage() {
                 </select>
               </div>
             </div>
+
+            {/* Multi-Company Project Ownership (Admin Only) */}
+            {isAdmin && (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs">
+                <CompanySelector
+                  value={editForm.company || "RAAMBOW"}
+                  onChange={(c: CompanyType) => setEditForm({ ...editForm, company: c })}
+                  label="Assigned Project Company"
+                />
+              </div>
+            )}
 
             {isAdmin && (
               <div>
@@ -672,6 +687,14 @@ export default function ClientProfilePage() {
                   >
                     Call
                   </a>
+                </div>
+              </div>
+
+              {/* Owning Company */}
+              <div>
+                <span className="text-slate-400 font-medium block">Project Belongs To</span>
+                <div className="mt-1">
+                  <CompanyBadge company={client.company} size="sm" />
                 </div>
               </div>
 

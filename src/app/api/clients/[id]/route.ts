@@ -105,6 +105,40 @@ export async function PATCH(
     if (body.expectedStart !== undefined) updateData.expectedStart = body.expectedStart?.trim() || null;
     if (body.futureReason !== undefined) updateData.futureReason = body.futureReason?.trim() || null;
 
+    // Company update (Multi-Company Project Management - Admin only)
+    if (body.company !== undefined && user.role === "ADMIN") {
+      const cleanComp = String(body.company).trim().toUpperCase();
+      if (cleanComp !== "RAAMBOW" && cleanComp !== "KATERNGERS") {
+        return NextResponse.json(
+          { error: "Invalid company selected. Project must belong to either RAAMBOW or KATERNGERS." },
+          { status: 400 }
+        );
+      }
+      if (cleanComp !== client.company) {
+        updateData.company = cleanComp;
+
+        await prisma.auditLog.create({
+          data: {
+            userId: user.id,
+            action: "PROJECT_COMPANY_CHANGED",
+            details: `Company changed from ${client.company} to ${cleanComp} for project "${client.name}" by ${user.name}.`,
+          },
+        });
+
+        await prisma.callHistory.create({
+          data: {
+            clientId: client.id,
+            userId: user.id,
+            callResult: "OTHER",
+            notes: `Project company reassigned from ${client.company} to ${cleanComp} by ${user.name}.`,
+            statusAtTime: client.status,
+            previousStatus: client.status,
+            newStatus: client.status,
+          },
+        });
+      }
+    }
+
     // Admin can reassign; Team member cannot reassign
     if (body.assignedToId !== undefined && user.role === "ADMIN") {
       const newAssignedId = body.assignedToId ? String(body.assignedToId).trim() : null;

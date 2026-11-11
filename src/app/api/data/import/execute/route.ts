@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     const failedRecords: Array<{
       rowNumber: number;
       name: string;
+      company?: string;
       phone: string;
       companyName?: string;
       email?: string;
@@ -156,6 +157,7 @@ export async function POST(request: Request) {
               where: { id: row.existingClientId },
               data: {
                 name: row.name,
+                company: row.company ? (row.company.includes("KATERNGER") ? "KATERNGERS" : "RAAMBOW") : undefined,
                 companyName: row.companyName || null,
                 email: row.email || null,
                 location: row.location || null,
@@ -194,6 +196,7 @@ export async function POST(request: Request) {
         await prisma.client.create({
           data: {
             name: row.name,
+            company: row.company ? (row.company.includes("KATERNGER") ? "KATERNGERS" : "RAAMBOW") : "RAAMBOW",
             phone: row.phone,
             companyName: row.companyName || null,
             email: row.email || null,

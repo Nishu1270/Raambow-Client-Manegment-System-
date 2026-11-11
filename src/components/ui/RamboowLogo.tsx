@@ -13,19 +13,19 @@ export function RamboowLogo({
 }: RamboowLogoProps) {
   // Proportional sizing calibrated to the master 1544 x 176 brand graphic (aspect ratio 8.77:1)
   const pixelHeights = {
-    sm: 28,
-    md: 34,
-    lg: 38,
-    xl: 42,
-    "2xl": 48,
+    sm: 22,
+    md: 26,
+    lg: 32,
+    xl: 36,
+    "2xl": 42,
   };
 
   const heightClasses = {
-    sm: "h-7",
-    md: "h-8 sm:h-8.5",
-    lg: "h-9 sm:h-9.5",
-    xl: "h-9.5 sm:h-10.5",
-    "2xl": "h-11 sm:h-12",
+    sm: "h-5.5",
+    md: "h-6.5 sm:h-7",
+    lg: "h-8 sm:h-8.5",
+    xl: "h-9 sm:h-9.5",
+    "2xl": "h-10.5 sm:h-11",
   };
 
   const currentHeight = pixelHeights[size] || 34;

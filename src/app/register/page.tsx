@@ -81,7 +81,7 @@ export default function RegisterPage() {
       {/* Top Navbar */}
       <header className="relative z-10 px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between gap-4 border-b border-slate-100 bg-white">
         <Link href="/login" className="inline-flex items-center shrink-0">
-          <RamboowLogo size="xl" showSubtitle={true} />
+          <RamboowLogo size="lg" showSubtitle={true} />
         </Link>
 
         {/* MSME Badge */}

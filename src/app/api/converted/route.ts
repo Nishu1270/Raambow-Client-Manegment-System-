@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -19,8 +19,18 @@ export async function GET() {
       );
     }
 
+    const { searchParams } = new URL(request.url);
+    const company = searchParams.get("company")?.trim() || "";
+
+    const where: Record<string, unknown> = { status: "CONVERTED" };
+    if (company && company !== "ALL") {
+      if (company === "RAAMBOW" || company === "KATERNGERS") {
+        where.company = company;
+      }
+    }
+
     const clients = await prisma.client.findMany({
-      where: { status: "CONVERTED" },
+      where,
       orderBy: { updatedAt: "desc" },
       include: {
         service: { select: { id: true, name: true } },
@@ -156,6 +166,17 @@ export async function PATCH(request: Request) {
       updateData.notes = body.notes ? String(body.notes).trim() : null;
     }
 
+    if (body.company !== undefined) {
+      const cleanComp = String(body.company).trim().toUpperCase();
+      if (cleanComp !== "RAAMBOW" && cleanComp !== "KATERNGERS") {
+        return NextResponse.json(
+          { error: "Invalid company selected. Must be RAAMBOW or KATERNGERS." },
+          { status: 400 }
+        );
+      }
+      updateData.company = cleanComp;
+    }
+
     const updated = await prisma.client.update({
       where: { id: clientId },
       data: updateData,
@@ -182,3 +203,4 @@ export async function PATCH(request: Request) {
     );
   }
 }
+

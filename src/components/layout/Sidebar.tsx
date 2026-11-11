@@ -63,8 +63,8 @@ export function Sidebar({ user, onCloseMobile }: SidebarProps) {
       {/* Top Branding Section — rendered on desktop; on mobile the top header bar already displays the single top logo */}
       <div>
         {!onCloseMobile ? (
-          <div className="px-5 py-5 border-b border-slate-100 flex items-center justify-start bg-white overflow-hidden">
-            <Link href="/dashboard" className="block w-full">
+          <div className="px-5 py-4.5 border-b border-slate-100 flex items-center justify-start bg-white overflow-hidden">
+            <Link href="/dashboard" className="block w-full max-w-[210px]">
               <RamboowLogo size="md" showSubtitle={false} className="max-w-full" />
             </Link>
           </div>
@@ -87,11 +87,10 @@ export function Sidebar({ user, onCloseMobile }: SidebarProps) {
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span
-                    className={`inline-flex items-center gap-1 px-1.5 py-0.2 text-[10px] font-bold tracking-wider rounded uppercase ${
-                      user.role === "ADMIN"
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.2 text-[10px] font-bold tracking-wider rounded uppercase ${user.role === "ADMIN"
                         ? "bg-ramboow-red-50 text-ramboow-red-700 border border-ramboow-red-200"
                         : "bg-blue-50 text-blue-700 border border-blue-200"
-                    }`}
+                      }`}
                   >
                     {user.role === "ADMIN" ? (
                       <>
@@ -122,18 +121,16 @@ export function Sidebar({ user, onCloseMobile }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onCloseMobile}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group ${
-                  isActive
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group ${isActive
                     ? "bg-slate-900 text-white shadow-xs font-semibold"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-colors ${
-                    isActive
+                  className={`w-4 h-4 transition-colors ${isActive
                       ? "text-ramboow-red-400"
                       : "text-slate-400 group-hover:text-slate-700"
-                  }`}
+                    }`}
                 />
                 <span>{item.label}</span>
               </Link>

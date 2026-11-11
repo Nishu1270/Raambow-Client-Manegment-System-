@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { LogCallModal } from "@/components/ui/LogCallModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import {
   CalendarClock,
@@ -120,12 +121,15 @@ export default function FollowUpsPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="font-bold text-slate-900 text-base hover:text-red-700 transition-colors"
-                      >
-                        {client.name}
-                      </Link>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="font-bold text-slate-900 text-base hover:text-red-700 transition-colors"
+                        >
+                          {client.name}
+                        </Link>
+                        <CompanyBadge company={client.company} size="xs" />
+                      </div>
                       <StatusBadge status={client.status} size="sm" />
                     </div>
 
@@ -205,12 +209,15 @@ export default function FollowUpsPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="font-bold text-slate-900 text-base hover:text-ramboow-red-700 transition-colors"
-                      >
-                        {client.name}
-                      </Link>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="font-bold text-slate-900 text-base hover:text-ramboow-red-700 transition-colors"
+                        >
+                          {client.name}
+                        </Link>
+                        <CompanyBadge company={client.company} size="xs" />
+                      </div>
                       <StatusBadge status={client.status} size="sm" />
                     </div>
 
@@ -290,12 +297,15 @@ export default function FollowUpsPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="font-bold text-slate-900 text-base hover:text-ramboow-red-700 transition-colors"
-                      >
-                        {client.name}
-                      </Link>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="font-bold text-slate-900 text-base hover:text-ramboow-red-700 transition-colors"
+                        >
+                          {client.name}
+                        </Link>
+                        <CompanyBadge company={client.company} size="xs" />
+                      </div>
                       <StatusBadge status={client.status} size="sm" />
                     </div>
 

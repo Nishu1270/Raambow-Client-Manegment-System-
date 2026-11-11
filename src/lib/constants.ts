@@ -92,3 +92,32 @@ export const USER_ROLES = [
   { id: "TEAM_MEMBER", label: "Team Member" },
 ] as const;
 
+export const COMPANIES = [
+  {
+    id: "RAAMBOW",
+    name: "RAAMBOW",
+    label: "RAAMBOW",
+    tagline: "Main Company",
+    bgColor: "#063B91",
+    textColor: "#FFFFFF",
+    badgeClass: "bg-[#063B91] text-white border-[#063B91]",
+    cardBorderClass: "border-[#063B91] ring-[#063B91]",
+    dotClass: "bg-[#063B91]",
+  },
+  {
+    id: "KATERNGERS",
+    name: "KATERNGERS",
+    label: "KATERNGERS",
+    tagline: "Second Company",
+    bgColor: "#FACC15",
+    textColor: "#171717",
+    badgeClass: "bg-[#FACC15] text-[#171717] border-[#FACC15]",
+    cardBorderClass: "border-[#FACC15] ring-[#FACC15]",
+    dotClass: "bg-[#FACC15]",
+  },
+] as const;
+
+export type CompanyType = (typeof COMPANIES)[number]["id"];
+export const DEFAULT_COMPANY: CompanyType = "RAAMBOW";
+
+

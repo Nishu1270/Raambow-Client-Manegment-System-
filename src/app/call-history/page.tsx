@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CallResultBadge } from "@/components/ui/CallResultBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import { CALL_RESULTS, CLIENT_STATUSES } from "@/lib/constants";
 import {
@@ -233,13 +234,16 @@ export default function CallHistoryPage() {
 
                           {/* Client */}
                           <td className="py-4 px-4">
-                            <Link
-                              href={`/clients/${call.client.id}`}
-                              className="font-bold text-slate-900 hover:text-ramboow-red-700 flex items-center gap-1"
-                            >
-                              <span>{call.client.name}</span>
-                              <ExternalLink className="w-3 h-3 text-slate-400" />
-                            </Link>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link
+                                href={`/clients/${call.client.id}`}
+                                className="font-bold text-slate-900 hover:text-ramboow-red-700 flex items-center gap-1"
+                              >
+                                <span>{call.client.name}</span>
+                                <ExternalLink className="w-3 h-3 text-slate-400" />
+                              </Link>
+                              <CompanyBadge company={call.client.company} size="xs" />
+                            </div>
                             <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                               <span>{call.client.phone}</span>
                               {call.client.companyName && (

@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { CompanySelector } from "@/components/ui/CompanySelector";
 import { formatDate } from "@/lib/utils";
+import { CompanyType } from "@/lib/constants";
 import {
   Trophy,
   IndianRupee,
@@ -44,10 +47,12 @@ export default function ConvertedClientsPage() {
   // Filter & Search
   const [search, setSearch] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
+  const [companyFilter, setCompanyFilter] = useState("ALL");
 
   // Project Management Modal
   const [editingClient, setEditingClient] = useState<any | null>(null);
   const [form, setForm] = useState({
+    company: "RAAMBOW",
     quotationAmount: "",
     advanceReceived: "",
     balancePayment: "",
@@ -95,6 +100,7 @@ export default function ConvertedClientsPage() {
   const openEditModal = (client: any) => {
     setEditingClient(client);
     setForm({
+      company: client.company || "RAAMBOW",
       quotationAmount: client.quotationAmount ? String(client.quotationAmount) : "",
       advanceReceived: client.advanceReceived ? String(client.advanceReceived) : "",
       balancePayment: client.balancePayment ? String(client.balancePayment) : "",
@@ -174,7 +180,10 @@ export default function ConvertedClientsPage() {
     const matchesPayment =
       paymentFilter === "ALL" || client.paymentStatus === paymentFilter;
 
-    return matchesSearch && matchesPayment;
+    const matchesCompany =
+      companyFilter === "ALL" || client.company === companyFilter;
+
+    return matchesSearch && matchesPayment && matchesCompany;
   });
 
   if (loading) {
@@ -340,20 +349,39 @@ export default function ConvertedClientsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">
-              Payment Status:
-            </span>
-            <select
-              value={paymentFilter}
-              onChange={(e) => setPaymentFilter(e.target.value)}
-              className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
-            >
-              <option value="ALL">All Payments</option>
-              <option value="PENDING">Pending (Advance awaited)</option>
-              <option value="PARTIAL">Partial (Advance received)</option>
-              <option value="COMPLETED">Completed (Fully paid)</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            {/* Company Filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">
+                Company:
+              </span>
+              <select
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+                className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="ALL">All Companies</option>
+                <option value="RAAMBOW">RAAMBOW</option>
+                <option value="KATERNGERS">KATERNGERS</option>
+              </select>
+            </div>
+
+            {/* Payment Filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">
+                Payment Status:
+              </span>
+              <select
+                value={paymentFilter}
+                onChange={(e) => setPaymentFilter(e.target.value)}
+                className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="ALL">All Payments</option>
+                <option value="PENDING">Pending (Advance awaited)</option>
+                <option value="PARTIAL">Partial (Advance received)</option>
+                <option value="COMPLETED">Completed (Fully paid)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -405,13 +433,16 @@ export default function ConvertedClientsPage() {
                       <tr key={client.id} className="hover:bg-slate-50/80 transition-colors group">
                         {/* Client Name & Company */}
                         <td className="py-3.5 px-4 font-semibold text-slate-900">
-                          <Link
-                            href={`/clients/${client.id}`}
-                            className="hover:text-ramboow-red-700 transition-colors flex items-center gap-1.5 font-bold"
-                          >
-                            <span>{client.name}</span>
-                            <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-ramboow-red-500 transition-colors" />
-                          </Link>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Link
+                              href={`/clients/${client.id}`}
+                              className="hover:text-ramboow-red-700 transition-colors flex items-center gap-1.5 font-bold"
+                            >
+                              <span>{client.name}</span>
+                              <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-ramboow-red-500 transition-colors" />
+                            </Link>
+                            <CompanyBadge company={client.company} size="xs" />
+                          </div>
                           <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                             <span className="flex items-center gap-1">
                               <Phone className="w-3 h-3 text-slate-400" />
@@ -576,6 +607,15 @@ export default function ConvertedClientsPage() {
               </div>
 
               <form onSubmit={handleSaveProject} className="space-y-4">
+                {/* Multi-Company Project Ownership */}
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs">
+                  <CompanySelector
+                    value={form.company || "RAAMBOW"}
+                    onChange={(c: CompanyType) => setForm((prev) => ({ ...prev, company: c }))}
+                    label="Assigned Project Company"
+                  />
+                </div>
+
                 {/* Dates */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -702,3 +742,4 @@ export default function ConvertedClientsPage() {
     </AppLayout>
   );
 }
+

@@ -13,6 +13,7 @@ export async function GET() {
 
     sheet.columns = [
       { header: "Client Name", key: "name", width: 22 },
+      { header: "Project Belongs To", key: "company", width: 22 },
       { header: "Phone Number", key: "phone", width: 18 },
       { header: "Company Name", key: "companyName", width: 25 },
       { header: "Email", key: "email", width: 28 },
@@ -36,6 +37,7 @@ export async function GET() {
     const sampleRows = [
       {
         name: "Aarav Sharma",
+        company: "RAAMBOW",
         phone: "+91 98765 01001",
         companyName: "Apex Infotech Pvt Ltd",
         email: "aarav.sharma@apexinfotech.in",
@@ -50,6 +52,7 @@ export async function GET() {
       },
       {
         name: "Pooja Reddy",
+        company: "KATERNGERS",
         phone: "9876501002",
         companyName: "Reddy Logistics",
         email: "pooja@reddylogistics.com",

@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { CLIENT_STATUSES } from "@/lib/constants";
+import { CLIENT_STATUSES, CompanyType } from "@/lib/constants";
+import { CompanySelector } from "@/components/ui/CompanySelector";
 import {
   UserPlus,
   ArrowLeft,
@@ -29,6 +30,7 @@ export default function AddClientPage() {
     name: "",
     phone: "",
     companyName: "",
+    company: "RAAMBOW",
     email: "",
     location: "",
     serviceId: "",
@@ -100,6 +102,11 @@ export default function AddClientPage() {
     e.preventDefault();
 
     // Validation
+    if (!formData.company) {
+      setError("Please select the company this project belongs to (RAAMBOW or KATERNGERS).");
+      return;
+    }
+
     if (!formData.name.trim()) {
       setError("Client Name is required.");
       return;
@@ -203,6 +210,18 @@ export default function AddClientPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Mandatory Company Selection (Multi-Company Project Management) */}
+            <div className="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 shadow-2xs">
+              <CompanySelector
+                value={formData.company}
+                onChange={(c: CompanyType) => {
+                  setFormData((prev) => ({ ...prev, company: c }));
+                  setError("");
+                }}
+                required
+              />
+            </div>
+
             {/* Primary Details: Name & Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

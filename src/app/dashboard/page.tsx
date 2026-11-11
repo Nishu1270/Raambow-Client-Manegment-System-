@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CallResultBadge } from "@/components/ui/CallResultBadge";
 import { LogCallModal } from "@/components/ui/LogCallModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { formatDate, formatTime } from "@/lib/utils";
 import {
   Users,
@@ -198,21 +199,19 @@ export default function DashboardPage() {
               <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
                 <button
                   onClick={() => setScope("all")}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                    scope === "all"
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${scope === "all"
                       ? "bg-slate-900 text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   All Company Clients
                 </button>
                 <button
                   onClick={() => setScope("my")}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                    scope === "my"
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${scope === "my"
                       ? "bg-slate-900 text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   My Assigned Clients
                 </button>
@@ -347,13 +346,14 @@ export default function DashboardPage() {
                     className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-200 transition-all group"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           href={`/clients/${client.id}`}
                           className="font-bold text-sm text-slate-900 hover:text-ramboow-red-700 transition-colors truncate"
                         >
                           {client.name}
                         </Link>
+                        <CompanyBadge company={client.company} size="xs" />
                         <StatusBadge status={client.status} size="sm" />
                       </div>
                       <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
@@ -439,12 +439,15 @@ export default function DashboardPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
-                        <Link
-                          href={`/clients/${client.id}`}
-                          className="font-bold text-sm text-slate-900 hover:text-red-700 truncate"
-                        >
-                          {client.name}
-                        </Link>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link
+                            href={`/clients/${client.id}`}
+                            className="font-bold text-sm text-slate-900 hover:text-red-700 truncate"
+                          >
+                            {client.name}
+                          </Link>
+                          <CompanyBadge company={client.company} size="xs" />
+                        </div>
                         <span className="text-[11px] font-bold text-red-600 bg-red-100/70 px-2 py-0.5 rounded">
                           Due {formatDate(client.nextFollowUpAt)}
                         </span>
@@ -522,6 +525,7 @@ export default function DashboardPage() {
                         >
                           {call.client.name}
                         </Link>
+                        <CompanyBadge company={call.client.company} size="xs" />
                         {call.client.companyName && (
                           <span className="text-xs text-slate-500">
                             ({call.client.companyName})
